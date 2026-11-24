@@ -1,0 +1,15 @@
+name: library_model
+description: Shared Library Blueprint model (Category, Book, Chapter).
+version: 0.1.0
+publish_to: none
+
+environment:
+  sdk: ^3.14.0
+
+dependencies:
+  vyuh_blueprint:
+    hosted: https://pub.vyuh.tech
+    version: 0.64.0
+
+dev_dependencies:
+  test: ^1.25.0

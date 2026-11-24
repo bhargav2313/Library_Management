@@ -1,0 +1,13 @@
+#!/usr/bin/env bash
+# Run the project's pinned Dart/Flutter: ./tools/sdk dart --version
+set -euo pipefail
+project_root="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+requested_tool="${1:?Usage: tools/sdk dart|flutter <args>}"
+shift
+sdk_root="${LIBRARY_FLUTTER_SDK:-$project_root/.fvm/flutter_sdk}"
+if [[ ! -x "$sdk_root/bin/$requested_tool" ]]; then
+  echo "Flutter 3.50.0 is required at $sdk_root." >&2
+  echo "Run 'fvm install' in the repo root, or set LIBRARY_FLUTTER_SDK." >&2
+  exit 1
+fi
+exec "$sdk_root/bin/$requested_tool" "$@"

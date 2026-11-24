@@ -1,0 +1,18 @@
+# Dart / Flutter build output
+.dart_tool/
+.flutter-plugins-dependencies
+build/
+**/build/
+coverage/
+
+# Local Flutter SDK link + fvm metadata (created by `fvm use`)
+.fvm/
+
+# Local server secrets (dev token, DB password) and uploads
+server/.local/
+
+# Logs and editor noise
+*.log
+*.iml
+.idea/
+.DS_Store
