@@ -15,10 +15,23 @@ void main() {
     expect(bookEntity.db.tableName, 'book_master');
   });
 
-  test('facets group the fields', () {
-    List<String> facets(Entity e) => [for (final f in e.facets) f.name];
-    expect(facets(categoryEntity), ['identity', 'details']);
-    expect(facets(bookEntity), ['identity', 'relationship', 'details']);
+  test('all fields live in the identity facet (one table per entity)', () {
+    List<String> fields(Entity e) => [
+      for (final f in e.facets) ...f.properties.map((p) => p.name),
+    ];
+    expect([for (final f in categoryEntity.facets) f.name], ['identity']);
+    expect([for (final f in bookEntity.facets) f.name], ['identity']);
+    expect(fields(categoryEntity), [
+      'category_code',
+      'category_name',
+      'description',
+    ]);
+    expect(fields(bookEntity), [
+      'book_code',
+      'book_name',
+      'category_id',
+      'author',
+    ]);
   });
 
   test('books depends on category; category exports its entity', () {

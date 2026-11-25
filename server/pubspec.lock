@@ -194,7 +194,7 @@ packages:
     source: hosted
     version: "2.27.3"
   http:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: http
       sha256: "87721a4a50b19c7f1d49001e51409bddc46303966ce89a65af4f4e6004896412"
@@ -280,6 +280,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.1.0"
+  mobx:
+    dependency: transitive
+    description:
+      name: mobx
+      sha256: "0502582173bee95ef466cb1c5e9f0e87e5026f21f29e98318b67719fc63ffeaf"
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.7.0"
   node_preamble:
     dependency: transitive
     description:
@@ -552,6 +560,14 @@ packages:
       url: "https://pub.vyuh.tech"
     source: hosted
     version: "0.64.0"
+  vyuh_blueprint_client:
+    dependency: "direct main"
+    description:
+      name: vyuh_blueprint_client
+      sha256: "6092eaff76f7f301e1f2f9b9e697df79a4a0ebe481e502c25df15b44ae2bd4d9"
+      url: "https://pub.vyuh.tech"
+    source: hosted
+    version: "0.64.0"
   vyuh_blueprint_deployment:
     dependency: transitive
     description:
@@ -569,7 +585,7 @@ packages:
     source: hosted
     version: "0.64.0"
   vyuh_blueprint_protocol:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: vyuh_blueprint_protocol
       sha256: "40ed640fe34b81bf2be3937adde4cd915c32cde4cdf380e0779c12ce79bf5299"

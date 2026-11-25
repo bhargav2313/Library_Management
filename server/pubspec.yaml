@@ -26,6 +26,15 @@ dependencies:
   vyuh_server_plugin_postgres:
     hosted: https://pub.vyuh.tech
     version: ^0.2.18
+  http: ^1.6.0
+
+
+  vyuh_blueprint_client:
+    hosted: https://pub.vyuh.tech
+    version: 0.64.0
+  vyuh_blueprint_protocol:
+    hosted: https://pub.vyuh.tech
+    version: 0.64.0
 
 dev_dependencies:
   test: ^1.25.0
