@@ -1,21 +1,42 @@
-# Dart / Flutter build output
+# ---- Secrets: never commit ----
+# Database settings + password (created by ./tools/db up from .env.example)
+.env
+.env.*
+!.env.example
+# Local dev token and uploads (created by the server)
+server/.local/
+
+# ---- Flutter SDK (created by `fvm install` / `fvm use`) ----
+.fvm/
+
+# ---- Dart / Flutter generated files ----
 .dart_tool/
+.packages
+.flutter-plugins
 .flutter-plugins-dependencies
 build/
 **/build/
 coverage/
+**/doc/api/
+.widget_preview/
 
-# Local Flutter SDK link + fvm metadata (created by `fvm use`)
-.fvm/
+# ---- Python (documentation/build_pdf.py) ----
+__pycache__/
+*.pyc
 
-# Local server secrets (dev token, DB password) and uploads
-server/.local/
-
-# Logs and editor noise
+# ---- Logs, temp and backups ----
 *.log
-*.iml
-.idea/
-.DS_Store
+*.tmp
+*.bak
+*~
+*.swp
 
-# Local database settings (password) for docker-compose and the server
-.env
+# ---- Editors and OS ----
+.idea/
+*.iml
+.history/
+.DS_Store
+Thumbs.db
+# Keep the shared VS Code setting that points at the fvm SDK; ignore the rest.
+.vscode/*
+!.vscode/settings.json
