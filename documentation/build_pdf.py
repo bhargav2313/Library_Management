@@ -1,11 +1,14 @@
 #!/usr/bin/env python3
-"""Build SETUP.pdf from SETUP.md.  Usage: python3 documentation/build_pdf.py
+"""Build a PDF from a Markdown guide.
+Usage: python3 documentation/build_pdf.py [path/to/GUIDE.md]   (default: SETUP.md)
+The PDF is written next to the .md file, with the same name.
 
 Supports the small Markdown subset the guide uses: # headings, paragraphs,
 - bullets, 1. numbered lists, ``` code blocks, | tables |, `code`, **bold**.
 Needs ReportLab (sudo apt install python3-reportlab, or pip install reportlab).
 """
 import re
+import sys
 from pathlib import Path
 
 from reportlab.lib import colors
@@ -18,7 +21,8 @@ from reportlab.platypus import (ListFlowable, ListItem, Paragraph,
                                 TableStyle)
 
 HERE = Path(__file__).resolve().parent
-SOURCE, TARGET = HERE / 'SETUP.md', HERE / 'SETUP.pdf'
+SOURCE = Path(sys.argv[1]).resolve() if len(sys.argv) > 1 else HERE / 'SETUP.md'
+TARGET = SOURCE.with_suffix('.pdf')
 
 INK, ACCENT, MUTED = colors.HexColor('#1f2937'), colors.HexColor('#1d4ed8'), colors.HexColor('#6b7280')
 CODE_BG, RULE, HEAD_BG = colors.HexColor('#f3f4f6'), colors.HexColor('#d1d5db'), colors.HexColor('#e8eefc')
@@ -64,7 +68,8 @@ def table(rows, width):
 
 def build():
     lines = SOURCE.read_text().splitlines()
-    doc = SimpleDocTemplate(str(TARGET), pagesize=A4, title='Vyuh Blueprint Project: Development Setup Guide',
+    title = next((l[2:] for l in lines if l.startswith('# ')), SOURCE.stem)
+    doc = SimpleDocTemplate(str(TARGET), pagesize=A4, title=title,
                             leftMargin=18 * mm, rightMargin=18 * mm,
                             topMargin=18 * mm, bottomMargin=18 * mm)
     story, i, para = [], 0, []
@@ -132,12 +137,12 @@ def build():
         canvas.saveState()
         canvas.setFont('Helvetica', 8)
         canvas.setFillColor(MUTED)
-        canvas.drawString(18 * mm, 10 * mm, 'Development Setup Guide')
+        canvas.drawString(18 * mm, 10 * mm, title)
         canvas.drawRightString(A4[0] - 18 * mm, 10 * mm, f'Page {d.page}')
         canvas.restoreState()
 
     doc.build(story, onFirstPage=footer, onLaterPages=footer)
-    print(f'Wrote {TARGET.relative_to(HERE.parent)}')
+    print(f'Wrote {TARGET}')
 
 
 if __name__ == '__main__':

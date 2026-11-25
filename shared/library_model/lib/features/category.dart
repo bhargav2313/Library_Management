@@ -40,10 +40,15 @@ final categoryEntity = Entity(
     UniqueKey([CategoryProperties.code]),
   ],
   facets: [
+    // Every field sits in the identity facet, so all of them are columns of
+    // category_master. (Each extra Facet would become its own table.)
     IdentityFacet(
-      properties: [CategoryProperties.code, CategoryProperties.name],
+      properties: [
+        CategoryProperties.code,
+        CategoryProperties.name,
+        CategoryProperties.description,
+      ],
     ),
-    Facet(name: 'details', properties: [CategoryProperties.description]),
   ],
 );
 

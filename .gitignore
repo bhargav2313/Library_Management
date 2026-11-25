@@ -40,3 +40,6 @@ Thumbs.db
 # Keep the shared VS Code setting that points at the fvm SDK; ignore the rest.
 .vscode/*
 !.vscode/settings.json
+
+# ---- Private project notes (not shared) ----
+documentation/library/

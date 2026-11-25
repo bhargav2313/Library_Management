@@ -60,13 +60,17 @@ final bookEntity = Entity(
     UniqueKey([BookProperties.code]),
   ],
   facets: [
-    IdentityFacet(properties: [BookProperties.code, BookProperties.name]),
-    Facet(
-      name: 'relationship',
-      properties: [BookProperties.categoryId],
+    // One facet = one table: book_master holds every field, including the
+    // category_id foreign key. (Each extra Facet would become its own table.)
+    IdentityFacet(
+      properties: [
+        BookProperties.code,
+        BookProperties.name,
+        BookProperties.categoryId,
+        BookProperties.author,
+      ],
       relationships: [BookProperties.category],
     ),
-    Facet(name: 'details', properties: [BookProperties.author]),
   ],
 );
 

@@ -1,0 +1,37 @@
+-- GENERATED from library blueprint by vyuh_blueprint. Do not edit.
+
+REVOKE ALL ON SCHEMA category FROM PUBLIC;
+
+REVOKE ALL ON ALL TABLES IN SCHEMA category FROM PUBLIC;
+
+REVOKE ALL ON ALL SEQUENCES IN SCHEMA category FROM PUBLIC;
+
+REVOKE ALL ON ALL FUNCTIONS IN SCHEMA category FROM PUBLIC;
+
+REVOKE ALL ON SCHEMA books FROM PUBLIC;
+
+REVOKE ALL ON ALL TABLES IN SCHEMA books FROM PUBLIC;
+
+REVOKE ALL ON ALL SEQUENCES IN SCHEMA books FROM PUBLIC;
+
+REVOKE ALL ON ALL FUNCTIONS IN SCHEMA books FROM PUBLIC;
+
+REVOKE ALL ON FUNCTION category.is_actor(text) FROM PUBLIC;
+
+REVOKE ALL ON category.system_actors FROM PUBLIC;
+
+REVOKE ALL ON FUNCTION category.begin_system_write(text, text) FROM PUBLIC;
+
+REVOKE ALL ON FUNCTION category.end_system_write(jsonb) FROM PUBLIC;
+
+REVOKE ALL ON FUNCTION category.system_writes_kept() FROM PUBLIC;
+
+REVOKE ALL ON FUNCTION books.is_actor(text) FROM PUBLIC;
+
+REVOKE ALL ON books.system_actors FROM PUBLIC;
+
+REVOKE ALL ON FUNCTION books.begin_system_write(text, text) FROM PUBLIC;
+
+REVOKE ALL ON FUNCTION books.end_system_write(jsonb) FROM PUBLIC;
+
+REVOKE ALL ON FUNCTION books.system_writes_kept() FROM PUBLIC;
