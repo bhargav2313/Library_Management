@@ -16,3 +16,6 @@ server/.local/
 *.iml
 .idea/
 .DS_Store
+
+# Local database settings (password) for docker-compose and the server
+.env

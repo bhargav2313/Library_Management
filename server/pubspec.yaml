@@ -1,0 +1,31 @@
+name: library_server
+description: Library Blueprint API server (PostgreSQL).
+version: 0.1.0
+publish_to: none
+
+environment:
+  sdk: ^3.14.0
+
+dependencies:
+  library_model:
+    path: ../shared/library_model
+  postgres: ^3.5.20
+  relic: ^1.2.0
+  vyuh_blueprint:
+    hosted: https://pub.vyuh.tech
+    version: 0.64.0
+  vyuh_blueprint_server:
+    hosted: https://pub.vyuh.tech
+    version: 0.64.0
+  vyuh_blueprint_storage:
+    hosted: https://pub.vyuh.tech
+    version: 0.64.0
+  vyuh_server:
+    hosted: https://pub.vyuh.tech
+    version: ^0.2.13
+  vyuh_server_plugin_postgres:
+    hosted: https://pub.vyuh.tech
+    version: ^0.2.18
+
+dev_dependencies:
+  test: ^1.25.0

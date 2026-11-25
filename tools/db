@@ -1,0 +1,44 @@
+#!/usr/bin/env bash
+# Local PostgreSQL via Docker Compose. Usage: ./tools/db up|down|status|shell|reset
+set -euo pipefail
+root="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+cd "$root"
+
+# First run: create .env from the template with a random password.
+if [[ ! -f .env ]]; then
+  password="$(head -c 24 /dev/urandom | base64 | tr -dc 'A-Za-z0-9' | head -c 32)"
+  sed "s/^DB_PASSWORD=.*/DB_PASSWORD=$password/" .env.example > .env
+  chmod 600 .env
+  echo "Created .env with a random DB_PASSWORD."
+fi
+set -a; source .env; set +a
+
+psql_in() { docker exec -i "$DB_CONTAINER" psql -U "$DB_USER" "$@"; }
+
+ensure_database() {
+  # The Supabase image may skip POSTGRES_DB, so create it when missing.
+  if [[ "$(psql_in -d postgres -tAc "SELECT 1 FROM pg_database WHERE datname='$DB_NAME'")" != "1" ]]; then
+    docker exec "$DB_CONTAINER" createdb -U "$DB_USER" "$DB_NAME"
+  fi
+}
+
+case "${1:-}" in
+  up)
+    docker compose up -d --wait
+    ensure_database
+    echo "PostgreSQL ready at $DB_HOST:$DB_PORT, database $DB_NAME (container $DB_CONTAINER)."
+    ;;
+  down)   docker compose stop ;;
+  status) docker compose ps ;;
+  shell)  docker exec -it "$DB_CONTAINER" psql -U "$DB_USER" -d "$DB_NAME" ;;
+  reset)
+    read -r -p "Delete ALL data in $DB_NAME (volume $DB_VOLUME)? [y/N] " answer
+    [[ "$answer" == [yY] ]] || { echo "Cancelled."; exit 1; }
+    docker compose down -v
+    "$0" up
+    ;;
+  *)
+    echo "Usage: ./tools/db up|down|status|shell|reset" >&2
+    exit 2
+    ;;
+esac

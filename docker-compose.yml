@@ -1,0 +1,30 @@
+# Local PostgreSQL for development. All values come from .env (see .env.example).
+#   ./tools/db up      start (creates everything the first time)
+#   ./tools/db down    stop (data is kept in the volume)
+#   ./tools/db reset   delete all data and start fresh
+name: ${COMPOSE_PROJECT_NAME:-library}
+
+services:
+  postgres:
+    # Same image as Learniq: PostgreSQL 17 with the Supabase roles/extensions.
+    image: ${DB_IMAGE:-public.ecr.aws/supabase/postgres:17.6.1.167}
+    container_name: ${DB_CONTAINER:-library-postgres}
+    environment:
+      POSTGRES_USER: ${DB_USER:-postgres}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:?Set DB_PASSWORD in .env}
+      POSTGRES_DB: ${DB_NAME:-library_dev}
+    ports:
+      # Only reachable from this machine (127.0.0.1), on DB_PORT.
+      - "127.0.0.1:${DB_PORT:-55433}:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER:-postgres} -d postgres"]
+      interval: 2s
+      timeout: 3s
+      retries: 30
+    restart: unless-stopped
+
+volumes:
+  pgdata:
+    name: ${DB_VOLUME:-library_postgres_data}
