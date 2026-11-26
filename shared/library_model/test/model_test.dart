@@ -11,8 +11,11 @@ void main() {
   test('modules map to schemas, entities to tables', () {
     expect(categoryModule.schema, 'category');
     expect(booksModule.schema, 'books');
+    expect(locationsModule.schema, 'locations');
     expect(categoryEntity.db.tableName, 'category_master');
     expect(bookEntity.db.tableName, 'book_master');
+    expect(sectionEntity.db.tableName, 'section_master');
+    expect(rackEntity.db.tableName, 'rack_master');
   });
 
   test('all fields live in the identity facet (one table per entity)', () {
@@ -21,6 +24,8 @@ void main() {
     ];
     expect([for (final f in categoryEntity.facets) f.name], ['identity']);
     expect([for (final f in bookEntity.facets) f.name], ['identity']);
+    expect([for (final f in sectionEntity.facets) f.name], ['identity']);
+    expect([for (final f in rackEntity.facets) f.name], ['identity']);
     expect(fields(categoryEntity), [
       'category_code',
       'category_name',
@@ -32,20 +37,37 @@ void main() {
       'category_id',
       'author',
     ]);
+    expect(fields(sectionEntity), [
+      'section_code',
+      'section_name',
+      'floor_no',
+    ]);
+    expect(fields(rackEntity), [
+      'rack_code',
+      'rack_name',
+      'section_id',
+      'capacity',
+    ]);
   });
 
-  test('books depends on category; category exports its entity', () {
+  test('books depends on category; category and locations export entities', () {
     expect(booksModule.dependencies, [CategoryRefs.module]);
     expect(
       categoryModule.exports.map((e) => e.qualifiedName),
       ['category.category'],
     );
+    expect(
+      locationsModule.exports.map((e) => e.qualifiedName),
+      ['locations.section', 'locations.rack'],
+    );
   });
 
-  test('codes are auto-numbered with CAT and BK prefixes', () {
+  test('codes are auto-numbered with CAT, BK, SEC, and RK prefixes', () {
     String? prefix(Property<Object?> p) =>
         p.facets.whereType<NumberPrefixFacet>().firstOrNull?.prefix;
     expect(prefix(CategoryProperties.code), 'CAT');
     expect(prefix(BookProperties.code), 'BK');
+    expect(prefix(SectionProperties.code), 'SEC');
+    expect(prefix(RackProperties.code), 'RK');
   });
 }

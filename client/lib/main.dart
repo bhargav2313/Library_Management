@@ -26,6 +26,10 @@ const devGrants = [
   'category.category.read',
   'books.book.create',
   'books.book.read',
+  'locations.section.create',
+  'locations.section.read',
+  'locations.rack.create',
+  'locations.rack.read',
 ];
 
 /// A ready-made "signed in" session built from the dev token, so the app

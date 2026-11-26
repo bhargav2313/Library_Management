@@ -16,6 +16,14 @@ REVOKE ALL ON ALL SEQUENCES IN SCHEMA books FROM PUBLIC;
 
 REVOKE ALL ON ALL FUNCTIONS IN SCHEMA books FROM PUBLIC;
 
+REVOKE ALL ON SCHEMA locations FROM PUBLIC;
+
+REVOKE ALL ON ALL TABLES IN SCHEMA locations FROM PUBLIC;
+
+REVOKE ALL ON ALL SEQUENCES IN SCHEMA locations FROM PUBLIC;
+
+REVOKE ALL ON ALL FUNCTIONS IN SCHEMA locations FROM PUBLIC;
+
 REVOKE ALL ON FUNCTION category.is_actor(text) FROM PUBLIC;
 
 REVOKE ALL ON category.system_actors FROM PUBLIC;
@@ -35,3 +43,13 @@ REVOKE ALL ON FUNCTION books.begin_system_write(text, text) FROM PUBLIC;
 REVOKE ALL ON FUNCTION books.end_system_write(jsonb) FROM PUBLIC;
 
 REVOKE ALL ON FUNCTION books.system_writes_kept() FROM PUBLIC;
+
+REVOKE ALL ON FUNCTION locations.is_actor(text) FROM PUBLIC;
+
+REVOKE ALL ON locations.system_actors FROM PUBLIC;
+
+REVOKE ALL ON FUNCTION locations.begin_system_write(text, text) FROM PUBLIC;
+
+REVOKE ALL ON FUNCTION locations.end_system_write(jsonb) FROM PUBLIC;
+
+REVOKE ALL ON FUNCTION locations.system_writes_kept() FROM PUBLIC;
