@@ -11,9 +11,12 @@ void main() {
   test('modules map to schemas, entities to tables', () {
     expect(categoryModule.schema, 'category');
     expect(booksModule.schema, 'books');
+    expect(locationsModule.schema, 'locations');
     expect(membersModule.schema, 'members');
     expect(categoryEntity.db.tableName, 'category_master');
     expect(bookEntity.db.tableName, 'book_master');
+    expect(sectionEntity.db.tableName, 'section_master');
+    expect(rackEntity.db.tableName, 'rack_master');
     expect(memberEntity.db.tableName, 'member_master');
   });
 
@@ -23,6 +26,8 @@ void main() {
     ];
     expect([for (final f in categoryEntity.facets) f.name], ['identity']);
     expect([for (final f in bookEntity.facets) f.name], ['identity']);
+    expect([for (final f in sectionEntity.facets) f.name], ['identity']);
+    expect([for (final f in rackEntity.facets) f.name], ['identity']);
     expect([for (final f in memberEntity.facets) f.name], ['identity']);
     expect(fields(categoryEntity), [
       'category_code',
@@ -34,6 +39,13 @@ void main() {
       'book_name',
       'category_id',
       'author',
+    ]);
+    expect(fields(sectionEntity), ['section_code', 'section_name', 'floor_no']);
+    expect(fields(rackEntity), [
+      'rack_code',
+      'rack_name',
+      'section_id',
+      'capacity',
     ]);
     expect(fields(memberEntity), [
       'member_code',
@@ -47,18 +59,24 @@ void main() {
     ]);
   });
 
-  test('books depends on category; category exports its entity', () {
+  test('books depends on category; category and locations export entities', () {
     expect(booksModule.dependencies, [CategoryRefs.module]);
     expect(categoryModule.exports.map((e) => e.qualifiedName), [
       'category.category',
     ]);
+    expect(locationsModule.exports.map((e) => e.qualifiedName), [
+      'locations.section',
+      'locations.rack',
+    ]);
   });
 
-  test('codes are auto-numbered with CAT, BK, and MEM prefixes', () {
+  test('codes are auto-numbered with CAT, BK, SEC, RK, and MEM prefixes', () {
     String? prefix(Property<Object?> p) =>
         p.facets.whereType<NumberPrefixFacet>().firstOrNull?.prefix;
     expect(prefix(CategoryProperties.code), 'CAT');
     expect(prefix(BookProperties.code), 'BK');
+    expect(prefix(SectionProperties.code), 'SEC');
+    expect(prefix(RackProperties.code), 'RK');
     expect(prefix(MemberProperties.code), 'MEM');
   });
 

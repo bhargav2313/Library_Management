@@ -3,6 +3,7 @@ import 'package:vyuh_blueprint/vyuh_blueprint.dart';
 
 import 'features/books.dart';
 import 'features/category.dart';
+import 'features/locations.dart';
 import 'features/members.dart';
 
 final libraryBlueprint = Blueprint(
@@ -14,6 +15,7 @@ final libraryBlueprint = Blueprint(
   modules: [
     categoryModule,
     booksModule,
+    locationsModule,
     membersModule,
     // chaptersModule comes back after the Category + Book slice works.
     // Access decisions (who may run which action) belong to the "iam" module,

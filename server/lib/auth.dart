@@ -14,6 +14,10 @@ const devGrants = {
   'category.category.read',
   'books.book.create',
   'books.book.read',
+  'locations.section.create',
+  'locations.section.read',
+  'locations.rack.create',
+  'locations.rack.read',
   'members.member.create',
   'members.member.read',
 };
