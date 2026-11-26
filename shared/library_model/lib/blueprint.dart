@@ -3,6 +3,7 @@ import 'package:vyuh_blueprint/vyuh_blueprint.dart';
 
 import 'features/books.dart';
 import 'features/category.dart';
+import 'features/locations.dart';
 
 final libraryBlueprint = Blueprint(
   name: 'library',
@@ -13,6 +14,7 @@ final libraryBlueprint = Blueprint(
   modules: [
     categoryModule,
     booksModule,
+    locationsModule,
     // chaptersModule comes back after the Category + Book slice works.
     // Access decisions (who may run which action) belong to the "iam" module,
     // as in Learniq. It owns no tables of ours.
