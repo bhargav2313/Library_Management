@@ -8,6 +8,8 @@ final libraryBlueprint = Blueprint(
   name: 'library',
   version: '1.0.0',
   title: 'Library',
+  entityUI: const AppEntityUIScope.all(),
+
   modules: [
     categoryModule,
     booksModule,
