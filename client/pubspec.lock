@@ -994,7 +994,7 @@ packages:
     source: hosted
     version: "0.64.0"
   vyuh_cdx_ui:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: vyuh_cdx_ui
       sha256: "52ec100279678e9d15a83f46bd470b80d54214d7750530fafea4bd5248b1fb86"
@@ -1114,7 +1114,7 @@ packages:
     source: hosted
     version: "0.64.0"
   vyuh_property_ui:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: vyuh_property_ui
       sha256: a2999a083427f2b8f74dee2766f7922322e3c238c27ded1d458395b2e8af9976

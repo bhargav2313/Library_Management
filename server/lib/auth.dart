@@ -18,6 +18,8 @@ const devGrants = {
   'locations.section.read',
   'locations.rack.create',
   'locations.rack.read',
+  'members.member.create',
+  'members.member.read',
 };
 
 /// Who the developer is. The Blueprint UI asks for this at start-up.
@@ -98,14 +100,16 @@ class DevAuthPlugin extends AuthPlugin {
     RouteSpec(
       method: 'POST',
       path: '/api/auth/login',
-      handler: (Request req) async =>
-          _json(401, {'message': 'Dev mode: start the app with the dev token.'}),
+      handler: (Request req) async => _json(401, {
+        'message': 'Dev mode: start the app with the dev token.',
+      }),
     ),
     RouteSpec(
       method: 'POST',
       path: '/api/auth/refresh',
-      handler: (Request req) async =>
-          _json(401, {'message': 'Dev mode: restart the app to sign in again.'}),
+      handler: (Request req) async => _json(401, {
+        'message': 'Dev mode: restart the app to sign in again.',
+      }),
     ),
     RouteSpec(
       method: 'POST',
