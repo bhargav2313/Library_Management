@@ -50,6 +50,12 @@ dependencies:
   vyuh_blueprint_ui:
     hosted: https://pub.vyuh.tech
     version: 0.64.0
+  vyuh_cdx_ui:
+    hosted: https://pub.vyuh.tech
+    version: ^12.19.0
+  vyuh_property_ui:
+    hosted: https://pub.vyuh.tech
+    version: 0.64.0
   vyuh_core: ^3.5.0
 
 dev_dependencies:

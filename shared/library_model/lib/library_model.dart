@@ -2,3 +2,4 @@
 export 'blueprint.dart';
 export 'features/books.dart';
 export 'features/category.dart';
+export 'features/members.dart';
