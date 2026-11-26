@@ -36,6 +36,7 @@ final categoryEntity = Entity(
   title: 'Category',
   nature: EntityNature.category,
   db: const EntityDb(tableName: 'category_master'),
+  ui: const EntityUI(display: RecordDisplay(title: 'category_name')),
   uniqueKeys: [
     UniqueKey([CategoryProperties.code]),
   ],

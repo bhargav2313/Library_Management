@@ -1,7 +1,6 @@
 // Module "books": owns the Book entity. A Book belongs to one Category.
 import 'package:vyuh_blueprint/vyuh_blueprint.dart';
 
-
 import 'category.dart';
 
 abstract final class BookRefs {
