@@ -86,7 +86,8 @@ void main() {
     expect(choice.options.map((o) => o.title), ['Student', 'Staff', 'Public']);
     expect((MemberProperties.name.kind as TextKind).maxLength, 100);
     expect(MemberProperties.email.required, isTrue);
-    expect((MemberProperties.email.kind as TextKind).maxLength, 50);
+    expect((MemberProperties.email.kind as TextKind).maxLength, 100);
+    expect(MemberProperties.phone.required, isTrue);
     expect((MemberProperties.phone.kind as TextKind).maxLength, 10);
     expect(MemberProperties.joinedOn.kind, isA<DateKind>());
     expect(MemberProperties.joinedOn.format, Format.date('dd-MM-yyyy'));
@@ -97,39 +98,132 @@ void main() {
     expect(MemberProperties.validateTill.required, isTrue);
     expect(MemberProperties.validateTill.format, Format.date('dd-MM-yyyy'));
     expect(MemberProperties.isActive.kind, isA<YesNoKind>());
+    expect(MemberProperties.isActive.defaultsTo, const DefaultValue(true));
     expect(memberEntity.ui.display.title, 'member_name');
   });
 
-  test(
-    'member joined_on allows today and past dates, rejects future dates',
-    () {
-      final schema = PropertySchema([MemberProperties.joinedOn]);
-      const region = Region(locale: 'en-US', timeZone: TimeZone('UTC'));
-      final today = DateTime.utc(2026, 11, 26);
+  test('unique keys and numeric bounds are configured across entities', () {
+    expect(categoryEntity.uniqueKeys.length, 2);
+    expect((CategoryProperties.description.kind as TextKind).maxLength, 500);
+    expect(BookProperties.author.required, isTrue);
+    expect(sectionEntity.uniqueKeys.length, 2);
+    expect(rackEntity.uniqueKeys.length, 2);
+    expect((RackProperties.capacity.kind as WholeNumberKind).max, 1000);
+    expect(memberEntity.uniqueKeys.length, 3);
+  });
 
-      final past = CheckedValues.of(
-        schema,
-        JsonTarget({'joined_on': '2026-11-25'}),
-        clock: () => today,
-        region: region,
-      );
-      expect(past.issues, isEmpty);
+  test('member validation rules enforce name, email, phone, and dates', () {
+    final schema = PropertySchema([
+      MemberProperties.name,
+      MemberProperties.email,
+      MemberProperties.phone,
+      MemberProperties.joinedOn,
+      MemberProperties.validateTill,
+    ]);
+    const region = Region(locale: 'en-US', timeZone: TimeZone('UTC'));
+    final today = DateTime.utc(2026, 11, 27);
 
-      final sameDay = CheckedValues.of(
-        schema,
-        JsonTarget({'joined_on': '2026-11-26'}),
-        clock: () => today,
-        region: region,
-      );
-      expect(sameDay.issues, isEmpty);
+    CheckedValues check(Map<String, Object?> data) => CheckedValues.of(
+      schema,
+      JsonTarget(data),
+      clock: () => today,
+      region: region,
+    );
 
-      final future = CheckedValues.of(
-        schema,
-        JsonTarget({'joined_on': '2026-11-27'}),
-        clock: () => today,
-        region: region,
-      );
-      expect(future.issues, isNotEmpty);
-    },
-  );
+    final valid = check({
+      'member_name': 'Priya Sharma',
+      'email': 'priya@library.org',
+      'phone': '9876543210',
+      'joined_on': '2026-11-26',
+      'validate_till': '2027-11-26',
+    });
+    expect(valid.issues, isEmpty);
+
+    // Same day validate_till == joined_on is allowed.
+    final sameDay = check({
+      'member_name': 'A. P. J. Kalam',
+      'email': 'kalam@library.org',
+      'phone': '9123456789',
+      'joined_on': '2026-11-27',
+      'validate_till': '2026-11-27',
+    });
+    expect(sameDay.issues, isEmpty);
+
+    // Digits in member_name rejected.
+    expect(
+      check({
+        'member_name': 'Priya123',
+        'email': 'priya@library.org',
+        'phone': '9876543210',
+        'joined_on': '2026-11-26',
+        'validate_till': '2027-11-26',
+      }).issues,
+      isNotEmpty,
+    );
+
+    // Invalid email rejected.
+    expect(
+      check({
+        'member_name': 'Priya Sharma',
+        'email': 'not-an-email',
+        'phone': '9876543210',
+        'joined_on': '2026-11-26',
+        'validate_till': '2027-11-26',
+      }).issues,
+      isNotEmpty,
+    );
+
+    // Non-numeric or < 10 digit phone rejected.
+    expect(
+      check({
+        'member_name': 'Priya Sharma',
+        'email': 'priya@library.org',
+        'phone': '98765abc10',
+        'joined_on': '2026-11-26',
+        'validate_till': '2027-11-26',
+      }).issues,
+      isNotEmpty,
+    );
+    expect(
+      check({
+        'member_name': 'Priya Sharma',
+        'email': 'priya@library.org',
+        'phone': '98765',
+        'joined_on': '2026-11-26',
+        'validate_till': '2027-11-26',
+      }).issues,
+      isNotEmpty,
+    );
+
+    // Future joined_on rejected.
+    expect(
+      check({
+        'member_name': 'Priya Sharma',
+        'email': 'priya@library.org',
+        'phone': '9876543210',
+        'joined_on': '2026-11-28',
+        'validate_till': '2027-11-26',
+      }).issues,
+      isNotEmpty,
+    );
+
+    // validate_till before joined_on rejected.
+    expect(
+      check({
+        'member_name': 'Priya Sharma',
+        'email': 'priya@library.org',
+        'phone': '9876543210',
+        'joined_on': '2026-11-26',
+        'validate_till': '2026-11-25',
+      }).issues,
+      isNotEmpty,
+    );
+  });
+
+  test('shell text scaling exposes multiple steps for the user menu slider', () {
+    expect(
+      libraryBlueprint.shell.appearance.textScaleSteps,
+      [0.8, 0.9, 1.0, 1.1, 1.2, 1.3, 1.4, 1.5],
+    );
+  });
 }

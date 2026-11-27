@@ -12,6 +12,7 @@ CREATE TABLE locations.rack_master (
   updated_by text CONSTRAINT updated_by_is_actor CHECK (locations.is_actor(updated_by)),
   archived_at timestamptz,
   UNIQUE (rack_code),
+  UNIQUE (section_id, rack_name),
   FOREIGN KEY (section_id) REFERENCES locations.section_master(id) ON DELETE RESTRICT,
   CONSTRAINT rack_master_rack_code_issued CHECK (rack_code IS NOT NULL OR archived_at IS NOT NULL)
 );

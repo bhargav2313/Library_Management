@@ -11,6 +11,7 @@ CREATE TABLE locations.section_master (
   updated_by text CONSTRAINT updated_by_is_actor CHECK (locations.is_actor(updated_by)),
   archived_at timestamptz,
   UNIQUE (section_code),
+  UNIQUE (section_name),
   CONSTRAINT section_master_section_code_issued CHECK (section_code IS NOT NULL OR archived_at IS NOT NULL)
 );
 

@@ -3,6 +3,7 @@
 //
 // Run: flutter run -d web-server --web-port 8023
 //        --dart-define=API_TOKEN=<token>
+import 'package:flutter/services.dart';
 import 'package:library_model/library_model.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:vyuh_blueprint/vyuh_blueprint.dart'
@@ -100,7 +101,12 @@ final surfaces = BlueprintAuthenticationSurfaces(
 );
 
 const _pastOrTodayDateVariant = VariantId('past_or_today_date');
-const _ddMmYyyyDateVariant = VariantId('dd_mm_yyyy_date');
+const _validateTillDateVariant = VariantId('validate_till_date');
+const _digitsOnlyPhoneVariant = VariantId('digits_only_phone');
+const _lettersOnlyNameVariant = VariantId('letters_only_name');
+
+final _digitsOnlyPattern = RegExp(r'^[0-9]*$');
+final _lettersOnlyPattern = RegExp(r"^[A-Za-z .'-]*$");
 
 DateTime? _parseDate(Object? raw) => switch (raw) {
   final DateTime d => d,
@@ -121,23 +127,44 @@ Widget _datePickerEditor(
   BuildContext context,
   BlueprintFieldContext field, {
   required bool disableFuture,
+  required bool requireJoinedOn,
 }) {
   final today = siteToday(field.region);
+  final joinedOnParsed = requireJoinedOn
+      ? _parseDate(field.render.row?['joined_on'])
+      : null;
+  final joinedOnUtc = joinedOnParsed == null
+      ? null
+      : DateTime.utc(
+          joinedOnParsed.year,
+          joinedOnParsed.month,
+          joinedOnParsed.day,
+        );
+
+  final waitingForJoinedOn = requireJoinedOn && joinedOnUtc == null;
+  final firstDate = joinedOnUtc ?? DateTime(1900);
+  final lastDate = disableFuture
+      ? DateTime.utc(today.year, today.month, today.day)
+      : DateTime(2200);
+
   final parsed = _parseDate(field.value);
-  final value = parsed == null
+  final rawValue = parsed == null
       ? null
       : DateTime.utc(parsed.year, parsed.month, parsed.day);
+  final beforeJoin = rawValue != null && rawValue.isBefore(firstDate);
+  final pickerValue = (waitingForJoinedOn || beforeJoin) ? null : rawValue;
+
   return Padding(
     padding: const EdgeInsets.only(bottom: 12),
     child: cdx.DateTimePicker(
-      enabled: field.render.fieldEnabled,
+      enabled: field.render.fieldEnabled && !waitingForJoinedOn,
       mode: cdx.DateTimePickerMode.date,
       datePattern: 'DD-MM-YYYY',
-      value: value,
-      firstDate: DateTime(1900),
-      lastDate: disableFuture
-          ? DateTime.utc(today.year, today.month, today.day)
-          : DateTime(2200),
+      value: pickerValue,
+      firstDate: firstDate,
+      lastDate: lastDate,
+      helperText: waitingForJoinedOn ? 'Select Joined On first' : null,
+      errorText: beforeJoin ? 'Must be on or after Joined On' : null,
       now: () => siteToday(field.region),
       onChanged: (picked) => field.render.onFieldChanged?.call(
         picked == null
@@ -146,6 +173,73 @@ Widget _datePickerEditor(
       ),
     ),
   );
+}
+
+class _FilteredTextField extends StatefulWidget {
+  const _FilteredTextField({
+    required this.field,
+    required this.allowed,
+    required this.maxLength,
+    this.keyboardType = TextInputType.text,
+    this.autofillHints,
+    this.placeholder,
+  });
+
+  final BlueprintFieldContext field;
+  final RegExp allowed;
+  final int maxLength;
+  final TextInputType keyboardType;
+  final Iterable<String>? autofillHints;
+  final String? placeholder;
+
+  @override
+  State<_FilteredTextField> createState() => _FilteredTextFieldState();
+}
+
+class _FilteredTextFieldState extends State<_FilteredTextField> {
+  late final TextEditingController _controller = TextEditingController(
+    text: widget.field.value?.toString() ?? '',
+  );
+
+  @override
+  void didUpdateWidget(_FilteredTextField oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    final nextText = widget.field.value?.toString() ?? '';
+    if (_controller.text != nextText) {
+      _controller.value = TextEditingValue(
+        text: nextText,
+        selection: TextSelection.collapsed(offset: nextText.length),
+      );
+    }
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 12),
+      child: cdx.CdxTextField(
+        controller: _controller,
+        enabled: widget.field.render.fieldEnabled,
+        maxLength: widget.maxLength,
+        keyboardType: widget.keyboardType,
+        autofillHints: widget.autofillHints,
+        placeholder: widget.placeholder,
+        inputFormatters: [
+          TextInputFormatter.withFunction(
+            (oldValue, newValue) =>
+                widget.allowed.hasMatch(newValue.text) ? newValue : oldValue,
+          ),
+        ],
+        onChanged: (text) => widget.field.render.onFieldChanged?.call(text),
+      ),
+    );
+  }
 }
 
 Future<void> main() async {
@@ -187,7 +281,16 @@ Future<void> main() async {
                   shownAs: _pastOrTodayDateVariant,
                 ),
                 'members.member.validate_till': MemberProperties.validateTill
-                    .also(shownAs: _ddMmYyyyDateVariant),
+                    .also(shownAs: _validateTillDateVariant),
+                'members.member.phone': MemberProperties.phone.also(
+                  shownAs: _digitsOnlyPhoneVariant,
+                ),
+                'members.member.member_name': MemberProperties.name.also(
+                  shownAs: _lettersOnlyNameVariant,
+                ),
+                'books.book.author': BookProperties.author.also(
+                  shownAs: _lettersOnlyNameVariant,
+                ),
               },
               fieldEditors: BlueprintFieldEditors(
                 byVariant: {
@@ -197,14 +300,44 @@ Future<void> main() async {
                           context,
                           field,
                           disableFuture: true,
+                          requireJoinedOn: false,
                         ),
                         format: (view) => _formatDdMmYyyy(view.value),
                       ),
-                  _ddMmYyyyDateVariant: PropertyEditor<BlueprintFieldContext>(
-                    edit: (context, field) =>
-                        _datePickerEditor(context, field, disableFuture: false),
-                    format: (view) => _formatDdMmYyyy(view.value),
-                  ),
+                  _validateTillDateVariant:
+                      PropertyEditor<BlueprintFieldContext>(
+                        edit: (context, field) => _datePickerEditor(
+                          context,
+                          field,
+                          disableFuture: false,
+                          requireJoinedOn: true,
+                        ),
+                        format: (view) => _formatDdMmYyyy(view.value),
+                      ),
+                  _digitsOnlyPhoneVariant:
+                      PropertyEditor<BlueprintFieldContext>(
+                        edit: (context, field) => _FilteredTextField(
+                          field: field,
+                          allowed: _digitsOnlyPattern,
+                          maxLength: 10,
+                          keyboardType: TextInputType.phone,
+                          autofillHints: const [AutofillHints.telephoneNumber],
+                          placeholder: '9876543210',
+                        ),
+                      ),
+                  _lettersOnlyNameVariant:
+                      PropertyEditor<BlueprintFieldContext>(
+                        edit: (context, field) => _FilteredTextField(
+                          field: field,
+                          allowed: _lettersOnlyPattern,
+                          maxLength: field.property.name == 'author'
+                              ? 150
+                              : 100,
+                          placeholder: field.property.name == 'author'
+                              ? 'e.g. Robert C. Martin'
+                              : 'e.g. Priya Sharma',
+                        ),
+                      ),
                 },
               ),
             ),

@@ -21,6 +21,7 @@ abstract final class BookProperties {
   static final name = Property.text(
     'book_name',
     title: 'Book Name',
+    hint: 'e.g. Clean Code',
     required: true,
     minLength: 1,
     maxLength: 150,
@@ -46,7 +47,17 @@ abstract final class BookProperties {
   static final author = Property.text(
     'author',
     title: 'Author',
+    hint: 'e.g. Robert C. Martin',
+    required: true,
+    minLength: 2,
     maxLength: 150,
+    forPeople: true,
+    checks: const [
+      MustMatch(
+        r"^[A-Za-z][A-Za-z .'-]*$",
+        message: 'Author name must contain letters only',
+      ),
+    ],
   );
 }
 
