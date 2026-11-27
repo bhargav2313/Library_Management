@@ -19,19 +19,39 @@ abstract final class MemberProperties {
   static final name = Property.text(
     'member_name',
     title: 'Member Name',
+    hint: 'e.g. Priya Sharma',
     required: true,
-    minLength: 1,
+    minLength: 2,
     maxLength: 100,
+    forPeople: true,
+    checks: const [
+      MustMatch(
+        r"^[A-Za-z][A-Za-z .'-]*$",
+        message: 'Name must contain letters only',
+      ),
+    ],
   );
 
   static final email = Property.text(
     'email',
     title: 'Email',
+    as: TextAs.email,
+    hint: 'priya@library.org',
     required: true,
-    maxLength: 50,
+    maxLength: 100,
   );
 
-  static final phone = Property.text('phone', title: 'Phone', maxLength: 10);
+  static final phone = Property.text(
+    'phone',
+    title: 'Phone',
+    hint: '9876543210',
+    required: true,
+    minLength: 10,
+    maxLength: 10,
+    checks: const [
+      MustMatch(r'^[0-9]{10}$', message: 'Enter a 10-digit phone number'),
+    ],
+  );
 
   static final membershipType = Property.choice(
     'membership_type',
@@ -56,10 +76,20 @@ abstract final class MemberProperties {
     'validate_till',
     title: 'Validate Till',
     required: true,
-    //checks: const [WithinDaysOfToday(future: 0)],
+    checks: [
+      Compare(
+        .atLeast,
+        other: joinedOn,
+        message: 'Validate Till must be on or after Joined On',
+      ),
+    ],
   ).also(format: Format.date('dd-MM-yyyy'));
 
-  static final isActive = Property.yesNo('is_active', title: 'Active');
+  static final isActive = Property.yesNo(
+    'is_active',
+    title: 'Active',
+    defaultsTo: const DefaultValue(true),
+  );
 }
 
 final memberEntity = Entity(
@@ -70,6 +100,8 @@ final memberEntity = Entity(
   ui: const EntityUI(display: RecordDisplay(title: 'member_name')),
   uniqueKeys: [
     UniqueKey([MemberProperties.code]),
+    UniqueKey([MemberProperties.email]),
+    UniqueKey([MemberProperties.phone]),
   ],
   facets: [
     // Every field sits in the identity facet, so all of them are columns of

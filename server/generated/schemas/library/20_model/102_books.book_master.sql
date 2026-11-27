@@ -5,7 +5,7 @@ CREATE TABLE books.book_master (
   book_code text,
   book_name text NOT NULL,
   category_id uuid NOT NULL,
-  author text,
+  author text NOT NULL,
   created_at timestamptz NOT NULL DEFAULT NULLIF(current_setting('vyuh.occurred_at', true), '')::timestamptz,
   created_by text CONSTRAINT created_by_is_actor CHECK (books.is_actor(created_by)),
   updated_at timestamptz NOT NULL DEFAULT NULLIF(current_setting('vyuh.occurred_at', true), '')::timestamptz,

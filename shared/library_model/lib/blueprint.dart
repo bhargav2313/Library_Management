@@ -11,6 +11,11 @@ final libraryBlueprint = Blueprint(
   version: '1.0.0',
   title: 'Library',
   entityUI: const AppEntityUIScope.all(),
+  shell: const AppShell(
+    appearance: AppearanceUI(
+      textScaleSteps: [0.8, 0.9, 1.0, 1.1, 1.2, 1.3, 1.4, 1.5],
+    ),
+  ),
 
   modules: [
     categoryModule,

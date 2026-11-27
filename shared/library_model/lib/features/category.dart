@@ -19,15 +19,18 @@ abstract final class CategoryProperties {
   static final name = Property.text(
     'category_name',
     title: 'Category Name',
+    hint: 'e.g. Science Fiction',
     required: true,
-    minLength: 1,
+    minLength: 2,
     maxLength: 150,
   );
 
   static final description = Property.text(
     'description',
     title: 'Description',
+    hint: 'Brief overview of this category',
     lines: 3,
+    maxLength: 500,
   );
 }
 
@@ -39,6 +42,7 @@ final categoryEntity = Entity(
   ui: const EntityUI(display: RecordDisplay(title: 'category_name')),
   uniqueKeys: [
     UniqueKey([CategoryProperties.code]),
+    UniqueKey([CategoryProperties.name]),
   ],
   facets: [
     // Every field sits in the identity facet, so all of them are columns of

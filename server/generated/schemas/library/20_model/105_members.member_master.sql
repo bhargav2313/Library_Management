@@ -5,17 +5,19 @@ CREATE TABLE members.member_master (
   member_code text,
   member_name text NOT NULL,
   email text NOT NULL,
-  phone text,
+  phone text NOT NULL,
   membership_type text NOT NULL,
   joined_on date NOT NULL,
   validate_till date NOT NULL,
-  is_active boolean,
+  is_active boolean DEFAULT true,
   created_at timestamptz NOT NULL DEFAULT NULLIF(current_setting('vyuh.occurred_at', true), '')::timestamptz,
   created_by text CONSTRAINT created_by_is_actor CHECK (members.is_actor(created_by)),
   updated_at timestamptz NOT NULL DEFAULT NULLIF(current_setting('vyuh.occurred_at', true), '')::timestamptz,
   updated_by text CONSTRAINT updated_by_is_actor CHECK (members.is_actor(updated_by)),
   archived_at timestamptz,
   UNIQUE (member_code),
+  UNIQUE (email),
+  UNIQUE (phone),
   CONSTRAINT member_master_member_code_issued CHECK (member_code IS NOT NULL OR archived_at IS NOT NULL)
 );
 

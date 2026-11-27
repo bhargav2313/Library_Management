@@ -20,8 +20,9 @@ abstract final class SectionProperties {
   static final name = Property.text(
     'section_name',
     title: 'Section Name',
+    hint: 'e.g. Science Wing',
     required: true,
-    minLength: 1,
+    minLength: 2,
     maxLength: 100,
   );
 
@@ -29,8 +30,8 @@ abstract final class SectionProperties {
     'floor_no',
     title: 'Floor No',
     required: true,
-    atLeast: 0,
-    atMost: 10,
+    atLeast: -2,
+    atMost: 20,
   );
 }
 
@@ -42,6 +43,7 @@ final sectionEntity = Entity(
   ui: const EntityUI(display: RecordDisplay(title: 'section_name')),
   uniqueKeys: [
     UniqueKey([SectionProperties.code]),
+    UniqueKey([SectionProperties.name]),
   ],
   facets: [
     // Every field sits in the identity facet, so all of them are columns of
@@ -69,6 +71,7 @@ abstract final class RackProperties {
   static final name = Property.text(
     'rack_name',
     title: 'Rack Name',
+    hint: 'e.g. Rack A1',
     required: true,
     minLength: 1,
     maxLength: 100,
@@ -96,6 +99,7 @@ abstract final class RackProperties {
     title: 'Capacity',
     required: true,
     atLeast: 1,
+    atMost: 1000,
   );
 }
 
@@ -107,6 +111,7 @@ final rackEntity = Entity(
   ui: const EntityUI(display: RecordDisplay(title: 'rack_name')),
   uniqueKeys: [
     UniqueKey([RackProperties.code]),
+    UniqueKey([RackProperties.sectionId, RackProperties.name]),
   ],
   facets: [
     // One facet = one table: locations.rack_master holds every field,

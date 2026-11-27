@@ -11,6 +11,7 @@ CREATE TABLE category.category_master (
   updated_by text CONSTRAINT updated_by_is_actor CHECK (category.is_actor(updated_by)),
   archived_at timestamptz,
   UNIQUE (category_code),
+  UNIQUE (category_name),
   CONSTRAINT category_master_category_code_issued CHECK (category_code IS NOT NULL OR archived_at IS NOT NULL)
 );
 
